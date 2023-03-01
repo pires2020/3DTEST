@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="icon" href="icon.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P">
+</head>
+<style>
+    body{
+        background: #222;
+        font-family: "Pres Start 2P";
+        height: 98vh;
+    }
+
+    .topUI {
+        position: absolute;
+        z-index: 1000;
+        transform: translate(-50%, 25px);
+        text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+        letter-spacing: 2px;
+        color: #fff;
+        font-size: 17px;
+    }
+
+    .topUI::before{
+        display: inline-block;
+        height: 17px;
+        padding: 1px 2px;
+        line-height: 19px;
+        font-size: 17px;
+        background-color: #fff;
+        text-shadow: none;
+        font-weight: 900;
+        letter-spacing: 0;
+        border-radius: 6px;
+        margin-right: 30px;
+        border: 2px solid #7dd8c9;
+    }
+
+    #time{
+        left: 13%;
+        color: #f4f430;
+    }
+
+    #time::before{
+        content: "TIME";
+        color: #f57214;
+    }
+    #score{
+        left:45%;
+    }
+    #score::before{
+        content: "score";
+        color: #a61a9d;
+    }
+    #lap {
+        left: 88%;
+        width: 45%;
+    }
+    #lap::before{
+        content:"LAP";
+        color: #0082df;
+    }
+    #tacho{
+        position: absolute;
+        text-align: right;
+        width: 23%;
+        bottom: 5%;
+        z-index: 2000;
+        color: #e62e13;
+        text-shadow: -2px 0 black, 0 2px black, 2px black, 0 -2 black;
+        letter-spacing: 2px;
+        font-size: 23px;
+    }
+    #tacho::after{
+        content: "kh/h";
+        color: #fab453;
+        font-size: 18px;
+        margin-left: 5px;
+    }
+
+    #game {
+        position: relative;
+        margin: 0 auto;
+        overflow: hidden;
+        background: #222;
+        user-select: none;
+        transition: opacity 10s;
+    }
+    #road {
+        transition: opacity 2s;
+        transition-timing-function: steps(8, end);
+    }
+    #road * {
+        position: absolute;
+        image-rendering: pixelated;
+    }
+    #hero {
+        background-repeat: no-repeat;
+        background-position: -110px 0;
+        z-index: 2000;
+        transform: scale(1.4);
+    }
+    #cloud {
+        background-size: auto 100%;
+        width: 100%;
+        height: 57%;
+    }
+    #road {
+        position: absolute;
+        color: #fff;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+    }
+    #highscore {
+        position: absolute;
+        width: 100%;
+        height: 20%;
+        bottom: 0;
+        column-count: 3;
+        column-fill: auto;
+    }
+    #highscore * {
+        color: #9e95a8;
+        margin: 0 0 6px 27px;
+    }
+    h1{
+        position: absolute;
+        left: 50%;
+        top: 25%;
+        transform: translate(-50%, -50%);
+        font-size: 5em;
+        background: -webkit-linear-gradient(#25d8b1,#e2bbf0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    #text{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        font-size: 1.2em;
+        color: #d9bbf3;
+        text-shadow: 0 0 black, 0 2px black, 2px 0 black, 0 0 black;
+    }
+    .blink{
+        animation: blinker 2s steps(4,end)
+        infinite;
+    }
+    @keyframes blinker {
+        50% {
+            opacity: 0;
+        }
+    }
+    #controls {
+        color: #868686;
+        font-size: 13px;
+        line-height: 13px;
+        margin: 10px;
+        text-align: center;
+    }
+    #controls > span{
+        margin-left: 20px;
+    }
+    #controls > span >span{
+        border: 2px solid #868686;
+        border-radius: 5px;
+        padding: 7px;
+        margin-right: right 10px;
+        display: inline-block;
+    }
+    #controls > span:last-child > span {
+        transform: rotate(90deg);
+    }
+</style>
+
+<script>
+    window.console = window.console ||
+    function (t) {};
+</script>
+
+<script>
+    if(document.location.search.match(/type=embed/gi)){
+        window.parent.postMessage("resize","*");
+    }
+</script>
+<body>
+    <div id="game">
+        <div id="road">
+            <div id="cloud"></div>
+            <div id="hero"></div>
+        </div>
+
+        <div id="hud">
+            <span id="time" class="topUI">0</span>
+            <span id="score" class="topUI">0</span>
+            <span id="lap" class="topUI">0'00"000</span>
+            <span id="tacho">0</span>
+        </div>
+
+        <div id="home">
+            <h1>Dash</h1>
+            <p id="text"></p>
+
+            <div id="highscore"></div>
+        </div>
+    </div>
+    <div id="controls">
+        <span><span>C</span>insert coin</span>
+        <span><span>M</span>mute</span>
+        <span><span>&lt;</span><span>&gt;</span>move</span>
+        <span><span>&lt;</span><span>&gt;</span>accelerate</span>
+    </div>
+
+    <script src="javascript/1.js"></script>
+    <script id="rendered-js">
+        const ASSETS = {
+            COLOR:{
+                TAR: ["#959298", "#9c9a9d"],
+                RUMBLE: ["959298", "#f5f2f6"],
+                GRASS: ["#eedccd", "#e6d4c5"]
+            },
+            IMAGE:{
+
+                TREE:{
+                    src: "gameimg/tree.png",
+                    width: 132,
+                    height: 192,
+                },
+                HERO:{
+                    src: "gameimg/hero.png",
+                    width: 110,
+                    height: 56,
+                },
+                CAR:{
+                    src: "gameimg/car04.png",
+                    width: 50,
+                    height: 36,
+                },
+                FINISH:{
+                    src: "gameimg/finish.png",
+                    width: 50,
+                    height: 36,
+                    offest: -0.5,
+                },
+                SKY:{
+                   src: "gameimg/cloud.jpg",
+                },
+            },
+            AUDIO:{
+                theme: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/155629/theme.mp3",
+                engine: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/155629/engine.wav",
+                honk: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/155629/honk.wav",
+                beep: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/155629/beep.wav",
+            },
+        };
+
+        Number.prototype.pad = function
+        (numZeros, char = 0){
+            let n = Math.abs(this);
+            let zeros = Math.max(0,numZeros - Math.floor(n).toString().length)
+            ;
+            .toString()
+            .substr(1)
+            .replace(0, char);
+            return zeroString + n;
+        };
+        Number.prototype.clamp = function
+        (min,max){
+            return Math.max(min, Math.min(this, max));
+        };
+
+        const timestamp = (_) => new Date().getTime();
+        const accelerate = (v. accel, dt) => v + accel * dt;
+        const isCollide = (x1, w1, x2, w2) => (x1 - x2) ** 2 <= (w2 + w1) ** 2;
+
+        function getRand(min, max){
+            return (Math.random() * (max - min) + min) | 0;
+        }
+        function randomProperty(obj) {
+            let keys = Object.keys(obj);
+            return obj[keys[(keys.length * Math.random()) << 0]];
+        }
+        function drawQuad(element, layer, color, x1, y1, w1, x2, y2, w2){
+            element.style.zIndex = layer;
+            element.style.background = color;
+            element.style.top = y2 + `px`;
+            element.style.left = x1 - w1 / 2 -w1 + `px`;
+            element.style.width = w1 * 3 + `px`;
+            element.style.height = y1 - y2 + `px`;
+            
+            
+            let leftOffset = w1 + x2 - x1 + Math.abs(w2 / 2 - w1 / 2);
+        element.style.clipPath = `polygon(${leftOffset}px 0, ${
+          leftOffset + w2
+        }px 0, 66.66% 100%, 33.33% 100%)`;
+        }
+
+        const KEYS = {};
+        const keyUpdate = (e) => {
+            KEYS[e.code] = e.type === `keydown`;
+            e.preventeDefault();
+        }
+        addEventListener(`keydown`, keyUpdate);
+
+        function sleep(ms) {
+            return new Promise(function (resolve, reject){
+                setTimeout((_) => resolve(), ms);
+            });
+        }
+
+        class LIne{
+            constructor() {
+                this.x = 0;
+                this.y = 0;
+                this.z = 0;
+
+                this.X=0;
+                this.Y=0;
+                this.W=0;
+
+                this.curve = 0;
+                this.scale = 0;
+
+                this.element = [];
+                this.special = null;
+            }
+            project(camX, camY, camZ) {
+                this.scale = camD / 
+                (this.z - camZ);
+                this.X = (1 + this.scale * (this.x - camZ)) * 
+                halfWidth;
+                this.Y = Math.ceil(((1 - this.scale * (this.Y - camY)) * height) / 2);
+                this.W = this.scale *
+                roadW * halfWidth;
+            }
+
+            clearSprites() {
+                for (let e of this.elements) e.style.background = "transparent";
+            }
+
+            drawSprite(depth, layer, sprite, offset) {
+                let destX= this.X + this.scale  * halfwidth * offset;
+                let destY = this.Y + 4;
+                let destW = (sprite.width * this.W) / 265;
+                let destH = (sprite.height * this.W) / 265;
+                
+                destX += destW * offset;
+                destY += destH * -1;
+                
+                let obj = layer instanceof Element ? layer : this.elements[layer + 6];
+                obj.style.background = `url('${sprite.src}')no-repeat`;
+                obj.style.backgroundSize = `${destW}px ${destH}px`;
+                obj.style.left = destX + `px`;
+                obj.style.top = destY + `px`;
+                obj.style.width = destW + `px`;
+                obj.style.height = destH + `px`;
+                obj.style.zIndex = depth + `px`;
+            }
+        }
+        class Car{
+            constructor(pos, type, lane) {
+                this.pos = pos;
+                this.type = type;
+                this.lane = lane;
+
+                var element = document.createElement("div");
+                road.appendChild(element);
+                this.element = element;
+            }
+        }
+        class Audio {
+        constructor() {
+          this.audioCtx = new AudioContext();
+
+          // volume
+          this.destination = this.audioCtx.createGain();
+          this.volume = 1;
+          this.destination.connect(this.audioCtx.destination);
+
+          this.files = {};
+
+          let _self = this;
+          this.load(ASSETS.AUDIO.theme, "theme", function (key) {
+            let source = _self.audioCtx.createBufferSource();
+            source.buffer = _self.files[key];
+
+            let gainNode = _self.audioCtx.createGain();
+            gainNode.gain.value = 0.6;
+            source.connect(gainNode);
+            gainNode.connect(_self.destination);
+
+            source.loop = true;
+            source.start(0);
+          });
+          get volume() {
+          return this.destination.gain.value;
+        }
+
+        set volume(level) {
+          this.destination.gain.value = level;
+        }
+
+        play(key, pitch) {
+          if (this.files[key]) {
+            let source = this.audioCtx.createBufferSource();
+            source.buffer = this.files[key];
+            source.connect(this.destination);
+            if (pitch) source.detune.value = pitch;
+            source.start(0);
+          } else this.load(key, () => this.play(key));
+        }
+
+        load(src, key, callback) {
+          let _self = this;
+          let request = new XMLHttpRequest();
+          request.open("GET", src, true);
+          request.responseType = "arraybuffer";
+          request.onload = function () {
+            _self.audioCtx.decodeAudioData(
+              request.response,
+              function (beatportBuffer) {
+                _self.files[key] = beatportBuffer;
+                callback(key);
+              },
+              function () {}
+            );
+          };
+          request.send();
+        }
+      }
+
+
+    </script>
+</body>
+</html>
